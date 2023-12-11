@@ -12,7 +12,7 @@ namespace KitchenDataLogger.Patches
         {
             if (seed == 0) return;
             Main.LogInfo($"\tBuilding: {seed}");
-            Random_Patch.Start(2);
+            Random_Patch.Start(3);
         }
 
         [HarmonyPatch(typeof(LayoutGraph), nameof(LayoutGraph.Build))]
