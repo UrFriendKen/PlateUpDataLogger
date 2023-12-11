@@ -12,6 +12,15 @@ namespace KitchenDataLogger.Patches
         {
             if (seed == 0) return;
             Main.LogInfo($"\tBuilding: {seed}");
+            Random_Patch.Start(2);
+        }
+
+        [HarmonyPatch(typeof(LayoutGraph), nameof(LayoutGraph.Build))]
+        [HarmonyPostfix]
+        static void Build_Postfix()
+        {
+            Main.LogInfo($"\t\t{Random_Patch.GetCount()}");
+            Random_Patch.Reset();
         }
     }
 }
