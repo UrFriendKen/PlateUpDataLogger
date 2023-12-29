@@ -41,10 +41,10 @@ namespace KitchenDataLogger.Patches
 
         [HarmonyPatch(typeof(UnityEngine.Random), "Range", new Type[] { typeof(int), typeof(int) })]
         [HarmonyPostfix]
-        static void Range_Postfix(ref int __result)
+        static void Range_Postfix(ref int __result, int minInclusive, int maxExclusive)
         {
             if (_shouldLogValue)
-                Main.LogInfo($"{new string('\t', _indentLevel)}Random.Range(int, int) = {__result}");
+                Main.LogInfo($"{new string('\t', _indentLevel)}Random.Range({minInclusive}, {maxExclusive}) = {__result}");
             _callCount++;
         }
     }

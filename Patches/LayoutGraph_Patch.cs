@@ -13,6 +13,7 @@ namespace KitchenDataLogger.Patches
             if (seed == 0) return;
             Main.LogInfo($"\tBuilding: {seed}");
             Random_Patch.Start(3);
+            LayoutBlueprint_Patch.Start(4);
         }
 
         [HarmonyPatch(typeof(LayoutGraph), nameof(LayoutGraph.Build))]
@@ -21,6 +22,7 @@ namespace KitchenDataLogger.Patches
         {
             Main.LogInfo($"\t\t{Random_Patch.GetCount()}");
             Random_Patch.Reset();
+            LayoutBlueprint_Patch.Reset();
         }
     }
 }
