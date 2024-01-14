@@ -12,7 +12,8 @@ namespace KitchenDataLogger.Patches
         {
             if (seed == 0) return;
             Main.LogInfo($"\tBuilding: {seed}");
-            Random_Patch.Start(3);
+            Module_Patch.Start(2);
+            //Random_Patch.Start(3);
             LayoutBlueprint_Patch.Start(4);
         }
 
@@ -20,8 +21,8 @@ namespace KitchenDataLogger.Patches
         [HarmonyPostfix]
         static void Build_Postfix()
         {
-            Main.LogInfo($"\t\t{Random_Patch.GetCount()}");
-            Random_Patch.Reset();
+            Module_Patch.Reset();
+            //Random_Patch.Reset();
             LayoutBlueprint_Patch.Reset();
         }
     }

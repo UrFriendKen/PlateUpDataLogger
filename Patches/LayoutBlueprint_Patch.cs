@@ -1,7 +1,9 @@
 ﻿using HarmonyLib;
 using Kitchen.Layouts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Tilemaps;
 
 namespace KitchenDataLogger.Patches
 {
@@ -23,22 +25,105 @@ namespace KitchenDataLogger.Patches
             _shouldLogValue = false;
         }
 
-        [HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
-        [HarmonyPrefix]
-        static void SetRoom_Prefix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room current)
+        [HarmonyPatch(typeof(LayoutBlueprint), "AdjacentRooms", new Type[] { typeof(Room) })]
+        [HarmonyPostfix]
+        static void AdjacentRooms(Room start, ref LayoutBlueprint __instance, ref HashSet<Room> __result, ref Dictionary<LayoutPosition, Room> ___Tiles)
         {
             if (!_shouldLogValue)
                 return;
-            Main.LogInfo($"{new string('\t', _indentLevel)}LayoutBlueprint.SetRoom(Room, Room)");
+
+            string indent = new string('\t', _indentLevel);
+            string infoIndent = new string('\t', _indentLevel + 1);
+            string loopIndent = new string('\t', _indentLevel + 2);
+
+            Main.LogInfo($"{indent}LayoutBlueprint.AdjacentRooms(Room start)");
+            Main.LogInfo($"{infoIndent}start.ID = {start.ID}");
+            Main.LogInfo($"{infoIndent}start.Type = {start.Type}");
+
+            Main.LogInfo($"{infoIndent}Room Tiles");
+
+            string tilePositionsIndent = new string('\t', _indentLevel + 3);
+            foreach (Room room in __instance.Rooms())
+            {
+                Main.LogInfo($"{loopIndent}{room.ID} ({room.Type}): {String.Join(", ", __instance.TilesOfRoom(room).OrderBy(tile => tile.x).ThenBy(tile => tile.y).Select(tile => $"({tile.x}, {tile.y})"))}");
+            }
+
+            Main.LogInfo($"{infoIndent}AdjacentRooms returned hashset to enumerable");
+            int hashSetToEnumerableIndex = 0;
+            foreach (Room room in __result)
+            {
+                Main.LogInfo($"{loopIndent}{hashSetToEnumerableIndex++}: {room.ID} ({room.Type})");
+            }
+            if (hashSetToEnumerableIndex == 0)
+            {
+                Main.LogInfo($"{loopIndent}Empty");
+            }
+
+
+            Main.LogInfo($"{infoIndent}Filter unassigned rooms using LINQ");
+            Room[] array = (from e in __result
+                            where e.Type == RoomType.Unassigned
+                            select e).ToArray();
+            for (int i = 0; i < array.Length; i++)
+            {
+                Main.LogInfo($"{loopIndent}{i}: {array[i].ID} ({array[i].Type})");
+            }
+            if (array.Length == 0)
+            {
+                Main.LogInfo($"{loopIndent}Empty");
+            }
+        }
+
+
+        [HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
+        [HarmonyPrefix]
+        static void SetRoom_Prefix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room current, Room next)
+        {
+            if (!_shouldLogValue)
+                return;
+
+            string indent = new string('\t', _indentLevel);
+            string infoIndent = new string('\t', _indentLevel + 1);
+            string loopIndent = new string('\t', _indentLevel + 2);
+            Main.LogInfo($"{indent}LayoutBlueprint.SetRoom(Room, Room)");
             LayoutPosition[] array = ___Tiles.Keys.ToArray();
 
-            string innerIndent = new string('\t', _indentLevel + 1);
+            Main.LogInfo($"{infoIndent}current.ID = {current.ID}");
+            Main.LogInfo($"{infoIndent}current.Type = {current.ID}");
+            Main.LogInfo($"{infoIndent}next.ID = {next.ID}");
+            Main.LogInfo($"{infoIndent}next.Type = {next.ID}");
+
+            Main.LogInfo($"{infoIndent}Positions Changed");
             foreach (LayoutPosition key in array)
             {
                 if (___Tiles[key].ID == current.ID)
                 {
-                    Main.LogInfo($"{innerIndent}LayoutPosition = ({key.x}, {key.y})");
+                    Main.LogInfo($"{loopIndent}LayoutPosition = ({key.x}, {key.y})");
                 }
+            }
+        }
+
+        [HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
+        [HarmonyPostfix]
+        static void SetRoom_Postfix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room next)
+        {
+            if (!_shouldLogValue)
+                return;
+
+            string infoIndent = new string('\t', _indentLevel + 1);
+            string loopIndent = new string('\t', _indentLevel + 2);
+
+            int width = ___Tiles.Select(tile => tile.Key.x).Max() + 1;
+            var orderedRooms = ___Tiles.OrderByDescending(tile => tile.Key.y).ThenBy(tile => tile.Key.x).Select(tile => tile.Value).ToList();
+            Main.LogInfo($"{infoIndent}Room result");
+            for (int j = 0; j < ___Tiles.Count / (float)width; j++)
+            {
+                string row = string.Empty;
+                for (int i = 0; i < width; i++)
+                {
+                    row += orderedRooms[i + j * width].ID == next.ID ? " ■" : " □";
+                }
+                Main.LogInfo($"{loopIndent}{row}");
             }
         }
     }

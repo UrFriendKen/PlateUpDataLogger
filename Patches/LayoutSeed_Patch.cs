@@ -10,7 +10,7 @@ namespace KitchenDataLogger.Patches
         [HarmonyPrefix]
         static void GenerateMap_Prefix(LayoutSeed __instance)
         {
-            Main.LogInfo($"{__instance.FixedSeed.StrValue}: {__instance.FixedSeed.IntValue}");
+            Main.LogInfo($"Seed: {__instance.FixedSeed.StrValue} ({__instance.FixedSeed.IntValue})");
         }
     }
 }
