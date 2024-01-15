@@ -26,8 +26,19 @@ namespace KitchenDataLogger.Patches
         }
 
         [HarmonyPatch(typeof(LayoutBlueprint), "AdjacentRooms", new Type[] { typeof(Room) })]
+        [HarmonyPrefix]
+        static void AdjacentRooms_Prefix(Room start)
+        {
+            string indent = new string('\t', _indentLevel);
+            string infoIndent = new string('\t', _indentLevel + 1);
+            Main.LogInfo($"{indent}LayoutBlueprint.AdjacentRooms(Room start)");
+            Main.LogInfo($"{infoIndent}start.ID = {start.ID}");
+            Main.LogInfo($"{infoIndent}start.Type = {start.Type}");
+        }
+
+        [HarmonyPatch(typeof(LayoutBlueprint), "AdjacentRooms", new Type[] { typeof(Room) })]
         [HarmonyPostfix]
-        static void AdjacentRooms(Room start, ref LayoutBlueprint __instance, ref HashSet<Room> __result, ref Dictionary<LayoutPosition, Room> ___Tiles)
+        static void AdjacentRooms_Postfix(Room start, ref LayoutBlueprint __instance, ref HashSet<Room> __result, ref Dictionary<LayoutPosition, Room> ___Tiles)
         {
             if (!_shouldLogValue)
                 return;
@@ -35,18 +46,13 @@ namespace KitchenDataLogger.Patches
             string indent = new string('\t', _indentLevel);
             string infoIndent = new string('\t', _indentLevel + 1);
             string loopIndent = new string('\t', _indentLevel + 2);
+            //Main.LogInfo($"{infoIndent}Room Tiles");
 
-            Main.LogInfo($"{indent}LayoutBlueprint.AdjacentRooms(Room start)");
-            Main.LogInfo($"{infoIndent}start.ID = {start.ID}");
-            Main.LogInfo($"{infoIndent}start.Type = {start.Type}");
-
-            Main.LogInfo($"{infoIndent}Room Tiles");
-
-            string tilePositionsIndent = new string('\t', _indentLevel + 3);
-            foreach (Room room in __instance.Rooms())
-            {
-                Main.LogInfo($"{loopIndent}{room.ID} ({room.Type}): {String.Join(", ", __instance.TilesOfRoom(room).OrderBy(tile => tile.x).ThenBy(tile => tile.y).Select(tile => $"({tile.x}, {tile.y})"))}");
-            }
+            //string tilePositionsIndent = new string('\t', _indentLevel + 3);
+            //foreach (Room room in __instance.Rooms())
+            //{
+            //    Main.LogInfo($"{loopIndent}{room.ID} ({room.Type}): {String.Join(", ", __instance.TilesOfRoom(room).OrderBy(tile => tile.x).ThenBy(tile => tile.y).Select(tile => $"({tile.x}, {tile.y})"))}");
+            //}
 
             Main.LogInfo($"{infoIndent}AdjacentRooms returned hashset to enumerable");
             int hashSetToEnumerableIndex = 0;
@@ -75,56 +81,56 @@ namespace KitchenDataLogger.Patches
         }
 
 
-        [HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
-        [HarmonyPrefix]
-        static void SetRoom_Prefix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room current, Room next)
-        {
-            if (!_shouldLogValue)
-                return;
+        //[HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
+        //[HarmonyPrefix]
+        //static void SetRoom_Prefix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room current, Room next)
+        //{
+        //    if (!_shouldLogValue)
+        //        return;
 
-            string indent = new string('\t', _indentLevel);
-            string infoIndent = new string('\t', _indentLevel + 1);
-            string loopIndent = new string('\t', _indentLevel + 2);
-            Main.LogInfo($"{indent}LayoutBlueprint.SetRoom(Room, Room)");
-            LayoutPosition[] array = ___Tiles.Keys.ToArray();
+        //    string indent = new string('\t', _indentLevel);
+        //    string infoIndent = new string('\t', _indentLevel + 1);
+        //    string loopIndent = new string('\t', _indentLevel + 2);
+        //    Main.LogInfo($"{indent}LayoutBlueprint.SetRoom(Room, Room)");
+        //    LayoutPosition[] array = ___Tiles.Keys.ToArray();
 
-            Main.LogInfo($"{infoIndent}current.ID = {current.ID}");
-            Main.LogInfo($"{infoIndent}current.Type = {current.ID}");
-            Main.LogInfo($"{infoIndent}next.ID = {next.ID}");
-            Main.LogInfo($"{infoIndent}next.Type = {next.ID}");
+        //    Main.LogInfo($"{infoIndent}current.ID = {current.ID}");
+        //    Main.LogInfo($"{infoIndent}current.Type = {current.ID}");
+        //    Main.LogInfo($"{infoIndent}next.ID = {next.ID}");
+        //    Main.LogInfo($"{infoIndent}next.Type = {next.ID}");
 
-            Main.LogInfo($"{infoIndent}Positions Changed");
-            foreach (LayoutPosition key in array)
-            {
-                if (___Tiles[key].ID == current.ID)
-                {
-                    Main.LogInfo($"{loopIndent}LayoutPosition = ({key.x}, {key.y})");
-                }
-            }
-        }
+        //    Main.LogInfo($"{infoIndent}Positions Changed");
+        //    foreach (LayoutPosition key in array)
+        //    {
+        //        if (___Tiles[key].ID == current.ID)
+        //        {
+        //            Main.LogInfo($"{loopIndent}LayoutPosition = ({key.x}, {key.y})");
+        //        }
+        //    }
+        //}
 
-        [HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
-        [HarmonyPostfix]
-        static void SetRoom_Postfix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room next)
-        {
-            if (!_shouldLogValue)
-                return;
+        //[HarmonyPatch(typeof(LayoutBlueprint), "SetRoom")]
+        //[HarmonyPostfix]
+        //static void SetRoom_Postfix(ref Dictionary<LayoutPosition, Room> ___Tiles, Room next)
+        //{
+        //    if (!_shouldLogValue)
+        //        return;
 
-            string infoIndent = new string('\t', _indentLevel + 1);
-            string loopIndent = new string('\t', _indentLevel + 2);
+        //    string infoIndent = new string('\t', _indentLevel + 1);
+        //    string loopIndent = new string('\t', _indentLevel + 2);
 
-            int width = ___Tiles.Select(tile => tile.Key.x).Max() + 1;
-            var orderedRooms = ___Tiles.OrderByDescending(tile => tile.Key.y).ThenBy(tile => tile.Key.x).Select(tile => tile.Value).ToList();
-            Main.LogInfo($"{infoIndent}Room result");
-            for (int j = 0; j < ___Tiles.Count / (float)width; j++)
-            {
-                string row = string.Empty;
-                for (int i = 0; i < width; i++)
-                {
-                    row += orderedRooms[i + j * width].ID == next.ID ? " ■" : " □";
-                }
-                Main.LogInfo($"{loopIndent}{row}");
-            }
-        }
+        //    int width = ___Tiles.Select(tile => tile.Key.x).Max() + 1;
+        //    var orderedRooms = ___Tiles.OrderByDescending(tile => tile.Key.y).ThenBy(tile => tile.Key.x).Select(tile => tile.Value).ToList();
+        //    Main.LogInfo($"{infoIndent}Room result");
+        //    for (int j = 0; j < ___Tiles.Count / (float)width; j++)
+        //    {
+        //        string row = string.Empty;
+        //        for (int i = 0; i < width; i++)
+        //        {
+        //            row += orderedRooms[i + j * width].ID == next.ID ? " ■" : " □";
+        //        }
+        //        Main.LogInfo($"{loopIndent}{row}");
+        //    }
+        //}
     }
 }

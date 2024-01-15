@@ -11,7 +11,7 @@ namespace KitchenDataLogger.Patches
         [HarmonyPrefix]
         static void Ctor_Prefix(string message)
         {
-            string indent = new string('\t', 3);
+            string indent = new string('\t', 2);
             Main.LogWarning($"{indent}{message}");
         }
     }
