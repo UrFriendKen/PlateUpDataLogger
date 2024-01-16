@@ -10,7 +10,7 @@ namespace KitchenDataLogger
     {
         public const string MOD_GUID = $"IcedMilo.PlateUp.{MOD_NAME}";
         public const string MOD_NAME = "Data Logger";
-        public const string MOD_VERSION = "0.1.5";
+        public const string MOD_VERSION = "0.1.6";
 
         public Main()
         {

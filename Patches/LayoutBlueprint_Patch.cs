@@ -29,6 +29,9 @@ namespace KitchenDataLogger.Patches
         [HarmonyPrefix]
         static void AdjacentRooms_Prefix(Room start)
         {
+            if (!_shouldLogValue)
+                return;
+
             string indent = new string('\t', _indentLevel);
             string infoIndent = new string('\t', _indentLevel + 1);
             Main.LogInfo($"{indent}LayoutBlueprint.AdjacentRooms(Room start)");
@@ -46,13 +49,8 @@ namespace KitchenDataLogger.Patches
             string indent = new string('\t', _indentLevel);
             string infoIndent = new string('\t', _indentLevel + 1);
             string loopIndent = new string('\t', _indentLevel + 2);
-            //Main.LogInfo($"{infoIndent}Room Tiles");
-
-            //string tilePositionsIndent = new string('\t', _indentLevel + 3);
-            //foreach (Room room in __instance.Rooms())
-            //{
-            //    Main.LogInfo($"{loopIndent}{room.ID} ({room.Type}): {String.Join(", ", __instance.TilesOfRoom(room).OrderBy(tile => tile.x).ThenBy(tile => tile.y).Select(tile => $"({tile.x}, {tile.y})"))}");
-            //}
+            
+            Main.LogInfo($"{infoIndent}Layout Tile Positions Loop Order: {String.Join(", ", __instance.Tiles.Select(tile => $"({tile.Key.x}, {tile.Key.y})"))}");
 
             Main.LogInfo($"{infoIndent}AdjacentRooms returned hashset to enumerable");
             int hashSetToEnumerableIndex = 0;

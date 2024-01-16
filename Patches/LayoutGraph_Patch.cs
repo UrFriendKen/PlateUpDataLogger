@@ -15,7 +15,7 @@ namespace KitchenDataLogger.Patches
             Module_Patch.Start(2);
             //Random_Patch.Start(3);
             LayoutBlueprint_Patch.Start(4);
-            HashSet_Patch.Start(5);
+            //HashSet_Patch.Start(5);
         }
 
         [HarmonyPatch(typeof(LayoutGraph), nameof(LayoutGraph.Build))]
@@ -25,7 +25,7 @@ namespace KitchenDataLogger.Patches
             Module_Patch.Reset();
             //Random_Patch.Reset();
             LayoutBlueprint_Patch.Reset();
-            HashSet_Patch.Reset();
+            //HashSet_Patch.Reset();
         }
     }
 }
