@@ -57,7 +57,7 @@ namespace KitchenDataLogger.Patches
 
             string indent = new string('\t', _indentLevel + 1);
             Main.LogInfo($"{indent}Room = {item.ID} ({item.Type})");
-            Main.LogInfo($"{indent}HashCode = {__result}");
+            //Main.LogInfo($"{indent}HashCode = {__result}");
         }
     }
 }

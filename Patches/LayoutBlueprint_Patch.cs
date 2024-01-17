@@ -50,7 +50,7 @@ namespace KitchenDataLogger.Patches
             string infoIndent = new string('\t', _indentLevel + 1);
             string loopIndent = new string('\t', _indentLevel + 2);
             
-            Main.LogInfo($"{infoIndent}Layout Tile Positions Loop Order: {String.Join(", ", __instance.Tiles.Select(tile => $"({tile.Key.x}, {tile.Key.y})"))}");
+            Main.LogInfo($"{infoIndent}Layout Tile Positions Loop Order: {String.Join(", ", __instance.Tiles.Select(tile => $"({tile.Key.x}, {tile.Key.y}) - {tile.Value.ID}"))}");
 
             Main.LogInfo($"{infoIndent}AdjacentRooms returned hashset to enumerable");
             int hashSetToEnumerableIndex = 0;

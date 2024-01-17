@@ -12,7 +12,7 @@ namespace KitchenDataLogger.Patches
         static void ConstructLayout_Prefix(LayoutProfile profile, RestaurantSetting setting, int seed)
         {
             Main.LogInfo($"LayoutProfile: {profile.name}");
-            Main.LogInfo($"RestaurantSetting: {setting.name}");
+            //Main.LogInfo($"RestaurantSetting: {setting.name}");
             Main.LogInfo($"Generated random number: {seed}");
         }
     }
