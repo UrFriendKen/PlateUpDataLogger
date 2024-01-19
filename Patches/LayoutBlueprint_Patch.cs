@@ -52,6 +52,8 @@ namespace KitchenDataLogger.Patches
             
             Main.LogInfo($"{infoIndent}Layout Tile Positions Loop Order: {String.Join(", ", __instance.Tiles.Select(tile => $"({tile.Key.x}, {tile.Key.y}) - {tile.Value.ID}"))}");
 
+            Main.LogInfo($"{infoIndent}LayoutHelpers.Directions Order: {String.Join(", ", LayoutHelpers.Directions.Select(direction => $"({direction.x}, {direction.y})"))}");
+
             Main.LogInfo($"{infoIndent}AdjacentRooms returned hashset to enumerable");
             int hashSetToEnumerableIndex = 0;
             foreach (Room room in __result)
